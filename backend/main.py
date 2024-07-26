@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
-import os
 import json
 from fastapi.middleware.cors import CORSMiddleware
+from pathlib import Path
+import os
 
 from groq import Groq
 
@@ -21,10 +22,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-CHAT_DIR = "chats"
+CHAT_DIR = Path("chats")
 
-if not os.path.exists(CHAT_DIR):
-    os.makedirs(CHAT_DIR)
+CHAT_DIR.mkdir(exist_ok=True)
 
 class Message(BaseModel):
     role: str
@@ -35,27 +35,30 @@ class ChatMessages(BaseModel):
 
 @app.get("/chat-files")
 async def get_chat_files():
-    files = os.listdir(CHAT_DIR)
-    return [{"filename": file} for file in files]
+    files = list(CHAT_DIR.glob("*.json"))
+    sorted_files = sorted(files, key=lambda x: datetime.strptime(x.stem, "%Y-%m%d-%H%M%S"), reverse=True)
+    return [{"filename": file.name} for file in sorted_files]
 
 @app.get("/chat/{filename}")
 async def get_chat(filename: str):
-    try:
-        with open(os.path.join(CHAT_DIR, filename), 'r') as f:
-            chat_history = json.load(f)
-        return chat_history
-    except FileNotFoundError:
+    file_path = CHAT_DIR / filename
+    if not file_path.exists():
         raise HTTPException(status_code=404, detail="Chat file not found")
+    
+    with file_path.open('r') as f:
+        chat_history = json.load(f)
+    
+    return chat_history
 
 @app.post("/new-chat")
 async def create_new_chat(chat_messages: ChatMessages):
     timestamp = datetime.now().strftime("%Y-%m%d-%H%M%S")
-    filename = f"{timestamp}.json"
+    filename = CHAT_DIR / f"{timestamp}.json"
     
-    with open(os.path.join(CHAT_DIR, filename), 'w') as f:
+    with filename.open('w') as f:
         json.dump([message.dict() for message in chat_messages.messages], f)
     
-    return {"filename": filename}
+    return {"filename": filename.name}
 
 @app.post("/chat")
 async def chat(chat_messages: ChatMessages):
@@ -69,8 +72,11 @@ async def chat(chat_messages: ChatMessages):
 
 @app.put("/chat/{filename}")
 async def update_chat(filename: str, chat_messages: ChatMessages):
-    with open(os.path.join(CHAT_DIR, filename), 'w') as f:
+    file_path = CHAT_DIR / filename
+    
+    with file_path.open('w') as f:
         json.dump([message.dict() for message in chat_messages.messages], f)
+    
     return {"status": "updated"}
 
 if __name__ == "__main__":
