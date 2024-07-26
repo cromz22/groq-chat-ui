@@ -19,7 +19,7 @@ const App: React.FC = () => {
   const [input, setInput] = useState<string>('');
   const [chatFiles, setChatFiles] = useState<ChatFile[]>([]);
   const [currentChat, setCurrentChat] = useState<string | null>(null);
-  const [theme, setTheme] = useState<string>('light');
+  const [theme, setTheme] = useState<string>('dark');
 
   useEffect(() => {
     fetchChatFiles();
