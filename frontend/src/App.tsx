@@ -19,7 +19,7 @@ const App: React.FC = () => {
   const [input, setInput] = useState<string>('');
   const [chatFiles, setChatFiles] = useState<ChatFile[]>([]);
   const [currentChat, setCurrentChat] = useState<string | null>(null);
-  const [theme, setTheme] = useState<string>('dark');
+  const [theme, setTheme] = useState<string>('dark');  // Set dark mode as default
 
   useEffect(() => {
     fetchChatFiles();
@@ -73,13 +73,35 @@ const App: React.FC = () => {
     }
   };
 
+  const handleCopyClick = (code: string) => {
+    navigator.clipboard.writeText(code);
+    alert('Code copied to clipboard!');
+  };
+
   const components = {
     code({ node, inline, className, children, ...props }: any) {
       const match = /language-(\w+)/.exec(className || '');
       return !inline && match ? (
-        <SyntaxHighlighter style={theme === 'dark' ? darcula : coy} language={match[1]} PreTag="div" {...props}>
-          {String(children).replace(/\n$/, '')}
-        </SyntaxHighlighter>
+        <div style={{ position: 'relative' }}>
+          <button 
+            onClick={() => handleCopyClick(String(children).replace(/\n$/, ''))} 
+            style={{
+              position: 'absolute', 
+              right: 0, 
+              top: 0, 
+              background: 'none', 
+              border: 'none', 
+              cursor: 'pointer', 
+              color: 'var(--text-color)',
+              padding: '5px'
+            }}
+          >
+            Copy
+          </button>
+          <SyntaxHighlighter style={theme === 'dark' ? darcula : coy} language={match[1]} PreTag="div" {...props}>
+            {String(children).replace(/\n$/, '')}
+          </SyntaxHighlighter>
+        </div>
       ) : (
         <code className={className} {...props}>
           {children}
