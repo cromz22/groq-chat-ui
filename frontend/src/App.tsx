@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { coy, darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './App.css';
 
 interface Message {
@@ -16,10 +19,15 @@ const App: React.FC = () => {
   const [input, setInput] = useState<string>('');
   const [chatFiles, setChatFiles] = useState<ChatFile[]>([]);
   const [currentChat, setCurrentChat] = useState<string | null>(null);
+  const [theme, setTheme] = useState<string>('light');
 
   useEffect(() => {
     fetchChatFiles();
   }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   const fetchChatFiles = async () => {
     const response = await axios.get<ChatFile[]>('http://localhost:8000/chat-files');
@@ -65,9 +73,31 @@ const App: React.FC = () => {
     }
   };
 
+  const components = {
+    code({ node, inline, className, children, ...props }: any) {
+      const match = /language-(\w+)/.exec(className || '');
+      return !inline && match ? (
+        <SyntaxHighlighter style={theme === 'dark' ? darcula : coy} language={match[1]} PreTag="div" {...props}>
+          {String(children).replace(/\n$/, '')}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    }
+  };
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
+
   return (
     <div className="App">
       <div className="sidebar">
+        <button className="theme-toggle" onClick={toggleTheme}>
+          Toggle Theme
+        </button>
         <button onClick={startNewChat}>New Chat</button>
         {chatFiles.map(file => (
           <div key={file.filename} onClick={() => loadChat(file.filename)}>
@@ -79,7 +109,7 @@ const App: React.FC = () => {
         <div className="chat-history">
           {messages.map((message, index) => (
             <div key={index} className={`message ${message.role}`}>
-              {message.content}
+              <ReactMarkdown components={components}>{message.content}</ReactMarkdown>
             </div>
           ))}
         </div>
