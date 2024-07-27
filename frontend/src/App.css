@@ -7,6 +7,7 @@
   --input-bg: #ffffff;
   --button-bg: #007bff;
   --button-hover-bg: #0056b3;
+  --font-family: 'Roboto', sans-serif;
 }
 
 [data-theme='dark'] {
@@ -21,6 +22,7 @@
 }
 
 .App {
+  font-family: var(--font-family);
   display: flex;
   height: 100vh;
   background-color: var(--background-color);
