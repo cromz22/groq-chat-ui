@@ -5,7 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import os
 from dataclasses import dataclass, asdict
-
 from groq import Groq
 
 client = Groq(
@@ -23,17 +22,17 @@ app.add_middleware(
 )
 
 CHAT_DIR = Path("chats")
-
 CHAT_DIR.mkdir(exist_ok=True)
 
 @dataclass
-class Message():
+class Message:
     role: str
     content: str
 
 @dataclass
-class ChatMessages():
+class ChatMessages:
     messages: list[Message]
+    model: str = "llama-3.1-70b-versatile"  # Default
 
 @app.get("/chat-files")
 async def get_chat_files():
@@ -66,7 +65,7 @@ async def create_new_chat(chat_messages: ChatMessages):
 async def chat(chat_messages: ChatMessages):
     response = client.chat.completions.create(
         messages=[asdict(message) for message in chat_messages.messages],
-        model="llama3-8b-8192",
+        model=chat_messages.model,
     )
 
     system_message = {"role": "system", "content": response.choices[0].message.content}

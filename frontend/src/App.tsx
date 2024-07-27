@@ -3,6 +3,7 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { coy, darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { FaSun, FaMoon, FaPlus } from 'react-icons/fa';
 import './App.css';
 
 interface Message {
@@ -20,6 +21,7 @@ const App: React.FC = () => {
   const [chatFiles, setChatFiles] = useState<ChatFile[]>([]);
   const [currentChat, setCurrentChat] = useState<string | null>(null);
   const [theme, setTheme] = useState<string>('dark');
+  const [chatModel, setChatModel] = useState<string>('llama-3.1-70b-versatile');
 
   useEffect(() => {
     fetchChatFiles();
@@ -55,6 +57,7 @@ const App: React.FC = () => {
 
     const response = await axios.post<{ content: string }>('http://localhost:8000/chat', {
       messages: newMessages,
+      model: chatModel,  // Include the chat model
     });
 
     const systemMessage: Message = { role: 'system', content: response.data.content };
@@ -83,15 +86,15 @@ const App: React.FC = () => {
       const match = /language-(\w+)/.exec(className || '');
       return !inline && match ? (
         <div style={{ position: 'relative' }}>
-          <button 
-            onClick={() => handleCopyClick(String(children).replace(/\n$/, ''))} 
+          <button
+            onClick={() => handleCopyClick(String(children).replace(/\n$/, ''))}
             style={{
-              position: 'absolute', 
-              right: 0, 
-              top: 0, 
-              background: 'none', 
-              border: 'none', 
-              cursor: 'pointer', 
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
               color: 'var(--text-color)',
               padding: '5px'
             }}
@@ -118,12 +121,19 @@ const App: React.FC = () => {
     <div className="App">
       <div className="sidebar">
         <button className="theme-toggle" onClick={toggleTheme}>
-          Toggle Theme
+          {theme === 'light' ? <FaMoon /> : <FaSun />}
         </button>
-        <button onClick={startNewChat}>New Chat</button>
+        <button className="new-chat-button" onClick={startNewChat}>
+          <FaPlus />
+        </button>
+        <select value={chatModel} onChange={(e) => setChatModel(e.target.value)}>
+          <option value="llama-3.1-405b-reasoning">llama-3.1-405b-reasoning</option>
+          <option value="llama-3.1-70b-versatile">llama-3.1-70b-versatile</option>
+          <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
+        </select>
         {chatFiles.map(file => (
-          <div key={file.filename} onClick={() => loadChat(file.filename)}>
-            {file.filename}
+          <div key={file.filename} className="chat-file" onClick={() => loadChat(file.filename)}>
+            {file.filename.replace('.json', '')}
           </div>
         ))}
       </div>
