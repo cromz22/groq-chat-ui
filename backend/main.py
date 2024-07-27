@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 from datetime import datetime
 import json
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import os
+from dataclasses import dataclass, asdict
 
 from groq import Groq
 
@@ -26,11 +26,13 @@ CHAT_DIR = Path("chats")
 
 CHAT_DIR.mkdir(exist_ok=True)
 
-class Message(BaseModel):
+@dataclass
+class Message():
     role: str
     content: str
 
-class ChatMessages(BaseModel):
+@dataclass
+class ChatMessages():
     messages: list[Message]
 
 @app.get("/chat-files")
@@ -56,14 +58,14 @@ async def create_new_chat(chat_messages: ChatMessages):
     filename = CHAT_DIR / f"{timestamp}.json"
     
     with filename.open('w') as f:
-        json.dump([message.dict() for message in chat_messages.messages], f)
+        json.dump([asdict(message) for message in chat_messages.messages], f)
     
     return {"filename": filename.name}
 
 @app.post("/chat")
 async def chat(chat_messages: ChatMessages):
     response = client.chat.completions.create(
-        messages=[message.dict() for message in chat_messages.messages],
+        messages=[asdict(message) for message in chat_messages.messages],
         model="llama3-8b-8192",
     )
 
@@ -75,7 +77,7 @@ async def update_chat(filename: str, chat_messages: ChatMessages):
     file_path = CHAT_DIR / filename
     
     with file_path.open('w') as f:
-        json.dump([message.dict() for message in chat_messages.messages], f)
+        json.dump([asdict(message) for message in chat_messages.messages], f)
     
     return {"status": "updated"}
 
