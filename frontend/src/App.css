@@ -79,17 +79,20 @@
   border-top: 1px solid var(--border-color);
 }
 
-.chat-input input {
-  flex: 1;
+.chat-input textarea {
+  flex-grow: 1;
+  resize: none;
+  height: 50px;
   padding: 10px;
+  font-size: 14px;
   border: 1px solid var(--border-color);
   border-radius: 5px;
   background-color: var(--input-bg);
   color: var(--text-color);
+  margin-right: 10px;
 }
 
 .chat-input button {
-  margin-left: 10px;
   padding: 10px 20px;
   border: none;
   background-color: var(--button-bg);

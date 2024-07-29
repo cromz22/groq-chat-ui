@@ -135,12 +135,16 @@ const App: React.FC = () => {
             </div>
           ))}
         </div>
-        <div className="chat-input">
-          <input
-            type="text"
+		<div className="chat-input">
+          <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
-            onKeyPress={e => e.key === 'Enter' && sendMessage()}
+            onKeyPress={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
           />
           <button onClick={sendMessage}>Send</button>
         </div>
