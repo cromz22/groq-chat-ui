@@ -7,6 +7,7 @@
   --input-bg: #ffffff;
   --button-bg: #007bff;
   --button-hover-bg: #0056b3;
+  --copy-button-color: #000000;
   --font-family: 'Roboto', sans-serif;
 }
 
@@ -19,6 +20,7 @@
   --input-bg: #2a2a2a;
   --button-bg: #0056b3;
   --button-hover-bg: #003f8a;
+  --copy-button-color: #ffffff;
 }
 
 .App {
@@ -134,4 +136,15 @@
 .chat-file:hover {
   background-color: var(--button-bg);
   color: white;
+}
+
+.copy-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--copy-button-color);
+  padding: 5px;
 }

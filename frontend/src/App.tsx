@@ -3,7 +3,7 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { coy, darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FaSun, FaMoon, FaPlus } from 'react-icons/fa';
+import { FaSun, FaMoon, FaPlus, FaCopy } from 'react-icons/fa';
 import './App.css';
 
 interface Message {
@@ -80,7 +80,6 @@ const App: React.FC = () => {
     navigator.clipboard.writeText(code);
     alert('Code copied to clipboard!');
   };
-
   const components = {
     code({ node, inline, className, children, ...props }: any) {
       const match = /language-(\w+)/.exec(className || '');
@@ -88,18 +87,9 @@ const App: React.FC = () => {
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => handleCopyClick(String(children).replace(/\n$/, ''))}
-            style={{
-              position: 'absolute',
-              right: 0,
-              top: 0,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--text-color)',
-              padding: '5px'
-            }}
+            className="copy-button"
           >
-            Copy
+            <FaCopy />
           </button>
           <SyntaxHighlighter style={theme === 'dark' ? darcula : coy} language={match[1]} PreTag="div" {...props}>
             {String(children).replace(/\n$/, '')}
