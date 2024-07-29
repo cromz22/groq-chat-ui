@@ -75,6 +75,11 @@ const App: React.FC = () => {
       setCurrentChat(newChatResponse.data.filename);
       fetchChatFiles();
     }
+
+    // Reset textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
