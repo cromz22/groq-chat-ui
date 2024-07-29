@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -22,6 +22,7 @@ const App: React.FC = () => {
   const [currentChat, setCurrentChat] = useState<string | null>(null);
   const [theme, setTheme] = useState<string>('dark');
   const [chatModel, setChatModel] = useState<string>('llama-3.1-70b-versatile');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     fetchChatFiles();
@@ -76,10 +77,23 @@ const App: React.FC = () => {
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    adjustTextareaHeight();
+  };
+
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, window.innerHeight / 2)}px`;
+    }
+  };
+
   const handleCopyClick = (code: string) => {
     navigator.clipboard.writeText(code);
     alert('Code copied to clipboard!');
   };
+
   const components = {
     code({ node, inline, className, children, ...props }: any) {
       const match = /language-(\w+)/.exec(className || '');
@@ -135,10 +149,11 @@ const App: React.FC = () => {
             </div>
           ))}
         </div>
-		<div className="chat-input">
+        <div className="chat-input">
           <textarea
+            ref={textareaRef}
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={handleInputChange}
             onKeyPress={e => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
