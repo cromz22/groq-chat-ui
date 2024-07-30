@@ -168,6 +168,14 @@
   color: white;
 }
 
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--copy-button-color);
+  padding: 5px;
+}
+
 .copy-button {
   position: absolute;
   right: 0;

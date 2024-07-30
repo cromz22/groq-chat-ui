@@ -90,6 +90,16 @@ async def update_chat(filename: str, chat_messages: ChatMessages):
     return {"status": "updated"}
 
 
+@app.delete("/chat/{filename}")
+async def delete_chat(filename: str):
+    file_path = CHAT_DIR / filename
+    if file_path.exists():
+        file_path.unlink()
+        return {"status": "deleted"}
+    else:
+        raise HTTPException(status_code=404, detail="Chat file not found")
+
+
 if __name__ == "__main__":
     import uvicorn
 

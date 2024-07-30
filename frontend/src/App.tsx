@@ -3,7 +3,7 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy, darcula } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { FaSun, FaMoon, FaPlus, FaCopy, FaPaperPlane } from "react-icons/fa";
+import { FaSun, FaMoon, FaPlus, FaCopy, FaPaperPlane, FaTrash } from "react-icons/fa";
 import "./App.css";
 
 interface Message {
@@ -149,6 +149,11 @@ const App: React.FC = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
+  const deleteChat = async (filename: string) => {
+    await axios.delete(`http://localhost:8000/chat/${filename}`);
+    fetchChatFiles();
+  };
+
   return (
     <div className="App">
       <div className="sidebar">
@@ -174,9 +179,16 @@ const App: React.FC = () => {
           <div
             key={file.filename}
             className="chat-file"
-            onClick={() => loadChat(file.filename)}
           >
-            {file.filename.replace(".json", "")}
+            <span onClick={() => loadChat(file.filename)}>
+              {file.filename.replace(".json", "")}
+            </span>
+            <button
+              className="delete-button"
+              onClick={() => deleteChat(file.filename)}
+            >
+              <FaTrash />
+            </button>
           </div>
         ))}
       </div>
