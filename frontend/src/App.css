@@ -32,12 +32,13 @@
 }
 
 .sidebar {
-  width: 200px;
+  width: 20vh;
   border-right: 1px solid var(--border-color);
   padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  text-align: center;
 }
 
 .chat-container {
@@ -60,11 +61,13 @@
   border-radius: 5px;
   white-space: pre-wrap;
   word-wrap: break-word;
+  max-width: 75vw;
 }
 
 .message.user {
-  text-align: right;
+  text-align: left;
   background-color: var(--user-message-bg);
+  margin-left: auto;
 }
 
 .message.system {
