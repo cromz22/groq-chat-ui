@@ -78,7 +78,7 @@
 
 .message {
   margin: 5px 0;
-  padding: 10px 10px 10px 40px; /* Increased padding on the right for copy button */
+  padding: 10px 40px 10px 40px;
   border-radius: 5px;
   white-space: pre-wrap;
   word-wrap: break-word;
