@@ -24,42 +24,50 @@ app.add_middleware(
 CHAT_DIR = Path("chats")
 CHAT_DIR.mkdir(exist_ok=True)
 
+
 @dataclass
 class Message:
     role: str
     content: str
+
 
 @dataclass
 class ChatMessages:
     messages: list[Message]
     model: str = "llama-3.1-70b-versatile"  # Default
 
+
 @app.get("/chat-files")
 async def get_chat_files():
     files = list(CHAT_DIR.glob("*.json"))
-    sorted_files = sorted(files, key=lambda x: datetime.strptime(x.stem, "%Y-%m%d-%H%M%S"), reverse=True)
+    sorted_files = sorted(
+        files, key=lambda x: datetime.strptime(x.stem, "%Y-%m%d-%H%M%S"), reverse=True
+    )
     return [{"filename": file.name} for file in sorted_files]
+
 
 @app.get("/chat/{filename}")
 async def get_chat(filename: str):
     file_path = CHAT_DIR / filename
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Chat file not found")
-    
-    with file_path.open('r') as f:
+
+    with file_path.open("r") as f:
         chat_history = json.load(f)
-    
+
     return chat_history
+
 
 @app.post("/new-chat")
 async def create_new_chat(chat_messages: ChatMessages):
     timestamp = datetime.now().strftime("%Y-%m%d-%H%M%S")
     filename = CHAT_DIR / f"{timestamp}.json"
-    
-    with filename.open('w') as f:
+
+    with filename.open("w") as f:
         json.dump([asdict(message) for message in chat_messages.messages], f)
-    
+
     return {"filename": filename.name}
+
 
 @app.post("/chat")
 async def chat(chat_messages: ChatMessages):
@@ -71,15 +79,18 @@ async def chat(chat_messages: ChatMessages):
     system_message = {"role": "system", "content": response.choices[0].message.content}
     return system_message
 
+
 @app.put("/chat/{filename}")
 async def update_chat(filename: str, chat_messages: ChatMessages):
     file_path = CHAT_DIR / filename
-    
-    with file_path.open('w') as f:
+
+    with file_path.open("w") as f:
         json.dump([asdict(message) for message in chat_messages.messages], f)
-    
+
     return {"status": "updated"}
+
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
