@@ -150,8 +150,14 @@ const App: React.FC = () => {
   };
 
   const deleteChat = async (filename: string) => {
-    await axios.delete(`http://localhost:8000/chat/${filename}`);
-    fetchChatFiles();
+    if (window.confirm(`Are you sure you want to delete the chat "${filename.replace(".json", "")}"?`)) {
+      await axios.delete(`http://localhost:8000/chat/${filename}`);
+      alert("Chat file deleted successfully!");
+      fetchChatFiles();
+      if (currentChat === filename) {
+        startNewChat();
+      }
+    }
   };
 
   return (
