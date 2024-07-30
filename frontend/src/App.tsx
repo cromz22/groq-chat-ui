@@ -3,7 +3,14 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy, darcula } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { FaSun, FaMoon, FaPlus, FaCopy, FaPaperPlane, FaTrash } from "react-icons/fa";
+import {
+  FaSun,
+  FaMoon,
+  FaPlus,
+  FaCopy,
+  FaPaperPlane,
+  FaTrash,
+} from "react-icons/fa";
 import "./App.css";
 
 interface Message {
@@ -113,7 +120,16 @@ const App: React.FC = () => {
   };
 
   const components = {
-    code({ inline, className, children, ...props }: { inline?: boolean; className?: string; children: React.ReactNode }) {
+    code({
+      inline,
+      className,
+      children,
+      ...props
+    }: {
+      inline?: boolean;
+      className?: string;
+      children: React.ReactNode;
+    }) {
       const match = /language-(\w+)/.exec(className || "");
       return !inline && match ? (
         <div style={{ position: "relative" }}>
@@ -150,7 +166,11 @@ const App: React.FC = () => {
   };
 
   const deleteChat = async (filename: string) => {
-    if (window.confirm(`Are you sure you want to delete the chat "${filename.replace(".json", "")}"?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete the chat "${filename.replace(".json", "")}"?`,
+      )
+    ) {
       await axios.delete(`http://localhost:8000/chat/${filename}`);
       alert("Chat file deleted successfully!");
       fetchChatFiles();
@@ -163,12 +183,14 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <div className="sidebar">
-        <button className="theme-toggle" onClick={toggleTheme}>
-          {theme === "light" ? <FaMoon /> : <FaSun />}
-        </button>
-        <button className="new-chat-button" onClick={startNewChat}>
-          <FaPlus />
-        </button>
+        <div className="top-buttons">
+          <button className="theme-toggle" onClick={toggleTheme}>
+            {theme === "light" ? <FaMoon /> : <FaSun />}
+          </button>
+          <button className="new-chat-button" onClick={startNewChat}>
+            <FaPlus />
+          </button>
+        </div>
         <select
           value={chatModel}
           onChange={(e) => setChatModel(e.target.value)}
@@ -182,10 +204,7 @@ const App: React.FC = () => {
           <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
         </select>
         {chatFiles.map((file) => (
-          <div
-            key={file.filename}
-            className="chat-file"
-          >
+          <div key={file.filename} className="chat-file">
             <span onClick={() => loadChat(file.filename)}>
               {file.filename.replace(".json", "")}
             </span>
