@@ -3,7 +3,7 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { coy, darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FaSun, FaMoon, FaPlus, FaCopy } from 'react-icons/fa';
+import { FaSun, FaMoon, FaPlus, FaCopy, FaPaperPlane } from 'react-icons/fa';
 import './App.css';
 
 interface Message {
@@ -177,7 +177,12 @@ const App: React.FC = () => {
               }
             }}
           />
-          <button onClick={sendMessage}>Send</button>
+          <button 
+		    className="send-button"
+			onClick={sendMessage}
+		  >
+			<FaPaperPlane />
+	      </button>
         </div>
       </div>
     </div>

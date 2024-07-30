@@ -92,10 +92,12 @@
   padding: 10px;
   background-color: var(--input-bg);
   border-top: 1px solid var(--border-color);
+  align-items: center;
+  justify-content: space-between;
 }
 
 .chat-input textarea {
-  flex-grow: 1;
+  flex: 1;
   resize: none;
   max-height: 50vh;
   padding: 10px;
@@ -104,7 +106,6 @@
   border-radius: 5px;
   background-color: var(--input-bg);
   color: var(--text-color);
-  margin-right: 10px;
 }
 
 .chat-input button {
@@ -118,6 +119,17 @@
 
 .chat-input button:hover {
   background-color: var(--button-hover-bg);
+}
+
+.send-button {
+  aspect-ratio: 1;
+  padding: 10px;
+  margin-left: 10px;
+  border: none;
+  background-color: var(--button-bg);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .theme-toggle {
