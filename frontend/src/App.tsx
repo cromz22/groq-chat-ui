@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { coy, darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FaSun, FaMoon, FaPlus, FaCopy, FaPaperPlane } from 'react-icons/fa';
-import './App.css';
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { coy, darcula } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { FaSun, FaMoon, FaPlus, FaCopy, FaPaperPlane } from "react-icons/fa";
+import "./App.css";
 
 interface Message {
-  role: 'user' | 'system';
+  role: "user" | "system";
   content: string;
 }
 
@@ -17,11 +17,11 @@ interface ChatFile {
 
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState<string>('');
+  const [input, setInput] = useState<string>("");
   const [chatFiles, setChatFiles] = useState<ChatFile[]>([]);
   const [currentChat, setCurrentChat] = useState<string | null>(null);
-  const [theme, setTheme] = useState<string>('dark');
-  const [chatModel, setChatModel] = useState<string>('llama-3.1-70b-versatile');
+  const [theme, setTheme] = useState<string>("dark");
+  const [chatModel, setChatModel] = useState<string>("llama-3.1-70b-versatile");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -29,11 +29,13 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
   const fetchChatFiles = async () => {
-    const response = await axios.get<ChatFile[]>('http://localhost:8000/chat-files');
+    const response = await axios.get<ChatFile[]>(
+      "http://localhost:8000/chat-files",
+    );
     setChatFiles(response.data);
   };
 
@@ -43,25 +45,33 @@ const App: React.FC = () => {
   };
 
   const loadChat = async (filename: string) => {
-    const response = await axios.get<Message[]>(`http://localhost:8000/chat/${filename}`);
+    const response = await axios.get<Message[]>(
+      `http://localhost:8000/chat/${filename}`,
+    );
     setMessages(response.data);
     setCurrentChat(filename);
   };
 
   const sendMessage = async () => {
-    if (input.trim() === '') return;
+    if (input.trim() === "") return;
 
-    const userMessage: Message = { role: 'user', content: input };
+    const userMessage: Message = { role: "user", content: input };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
-    setInput('');
+    setInput("");
 
-    const response = await axios.post<{ content: string }>('http://localhost:8000/chat', {
-      messages: newMessages,
-      model: chatModel,  // Include the chat model
-    });
+    const response = await axios.post<{ content: string }>(
+      "http://localhost:8000/chat",
+      {
+        messages: newMessages,
+        model: chatModel, // Include the chat model
+      },
+    );
 
-    const systemMessage: Message = { role: 'system', content: response.data.content };
+    const systemMessage: Message = {
+      role: "system",
+      content: response.data.content,
+    };
     setMessages([...newMessages, systemMessage]);
 
     if (currentChat) {
@@ -69,16 +79,19 @@ const App: React.FC = () => {
         messages: [...newMessages, systemMessage],
       });
     } else {
-      const newChatResponse = await axios.post<{ filename: string }>('http://localhost:8000/new-chat', {
-        messages: [...newMessages, systemMessage],
-      });
+      const newChatResponse = await axios.post<{ filename: string }>(
+        "http://localhost:8000/new-chat",
+        {
+          messages: [...newMessages, systemMessage],
+        },
+      );
       setCurrentChat(newChatResponse.data.filename);
       fetchChatFiles();
     }
 
     // Reset textarea height
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
     }
   };
 
@@ -89,29 +102,34 @@ const App: React.FC = () => {
 
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, window.innerHeight / 2)}px`;
     }
   };
 
   const handleCopyClick = (code: string) => {
     navigator.clipboard.writeText(code);
-    alert('Code copied to clipboard!');
+    alert("Code copied to clipboard!");
   };
 
   const components = {
     code({ node, inline, className, children, ...props }: any) {
-      const match = /language-(\w+)/.exec(className || '');
+      const match = /language-(\w+)/.exec(className || "");
       return !inline && match ? (
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: "relative" }}>
           <button
-            onClick={() => handleCopyClick(String(children).replace(/\n$/, ''))}
+            onClick={() => handleCopyClick(String(children).replace(/\n$/, ""))}
             className="copy-button"
           >
             <FaCopy />
           </button>
-          <SyntaxHighlighter style={theme === 'dark' ? darcula : coy} language={match[1]} PreTag="div" {...props}>
-            {String(children).replace(/\n$/, '')}
+          <SyntaxHighlighter
+            style={theme === "dark" ? darcula : coy}
+            language={match[1]}
+            PreTag="div"
+            {...props}
+          >
+            {String(children).replace(/\n$/, "")}
           </SyntaxHighlighter>
         </div>
       ) : (
@@ -119,35 +137,46 @@ const App: React.FC = () => {
           {children}
         </code>
       );
-    }
+    },
   };
 
   const handleCopyMessage = (content: string) => {
     navigator.clipboard.writeText(content);
-    alert('Message copied to clipboard!');
+    alert("Message copied to clipboard!");
   };
 
   const toggleTheme = () => {
-    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
   return (
     <div className="App">
       <div className="sidebar">
         <button className="theme-toggle" onClick={toggleTheme}>
-          {theme === 'light' ? <FaMoon /> : <FaSun />}
+          {theme === "light" ? <FaMoon /> : <FaSun />}
         </button>
         <button className="new-chat-button" onClick={startNewChat}>
           <FaPlus />
         </button>
-        <select value={chatModel} onChange={(e) => setChatModel(e.target.value)}>
-          <option value="llama-3.1-405b-reasoning">llama-3.1-405b-reasoning</option>
-          <option value="llama-3.1-70b-versatile">llama-3.1-70b-versatile</option>
+        <select
+          value={chatModel}
+          onChange={(e) => setChatModel(e.target.value)}
+        >
+          <option value="llama-3.1-405b-reasoning">
+            llama-3.1-405b-reasoning
+          </option>
+          <option value="llama-3.1-70b-versatile">
+            llama-3.1-70b-versatile
+          </option>
           <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
         </select>
-        {chatFiles.map(file => (
-          <div key={file.filename} className="chat-file" onClick={() => loadChat(file.filename)}>
-            {file.filename.replace('.json', '')}
+        {chatFiles.map((file) => (
+          <div
+            key={file.filename}
+            className="chat-file"
+            onClick={() => loadChat(file.filename)}
+          >
+            {file.filename.replace(".json", "")}
           </div>
         ))}
       </div>
@@ -161,7 +190,9 @@ const App: React.FC = () => {
               >
                 <FaCopy />
               </button>
-              <ReactMarkdown components={components}>{message.content}</ReactMarkdown>
+              <ReactMarkdown components={components}>
+                {message.content}
+              </ReactMarkdown>
             </div>
           ))}
         </div>
@@ -170,19 +201,16 @@ const App: React.FC = () => {
             ref={textareaRef}
             value={input}
             onChange={handleInputChange}
-            onKeyPress={e => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+            onKeyPress={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
               }
             }}
           />
-          <button 
-		    className="send-button"
-			onClick={sendMessage}
-		  >
-			<FaPaperPlane />
-	      </button>
+          <button className="send-button" onClick={sendMessage}>
+            <FaPaperPlane />
+          </button>
         </div>
       </div>
     </div>
