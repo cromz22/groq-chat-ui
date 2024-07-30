@@ -122,6 +122,11 @@ const App: React.FC = () => {
     }
   };
 
+  const handleCopyMessage = (content: string) => {
+    navigator.clipboard.writeText(content);
+    alert('Message copied to clipboard!');
+  };
+
   const toggleTheme = () => {
     setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
   };
@@ -150,6 +155,12 @@ const App: React.FC = () => {
         <div className="chat-history">
           {messages.map((message, index) => (
             <div key={index} className={`message ${message.role}`}>
+              <button
+                className="copy-button"
+                onClick={() => handleCopyMessage(message.content)}
+              >
+                <FaCopy />
+              </button>
               <ReactMarkdown components={components}>{message.content}</ReactMarkdown>
             </div>
           ))}
