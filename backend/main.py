@@ -34,7 +34,7 @@ class Message:
 @dataclass
 class ChatMessages:
     messages: list[Message]
-    model: str = "llama-3.1-70b-versatile"  # Default
+    model: str = "llama-3.3-70b-versatile"  # Default
 
 
 @app.get("/chat-files")

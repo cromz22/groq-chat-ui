@@ -28,7 +28,7 @@ const App: React.FC = () => {
   const [chatFiles, setChatFiles] = useState<ChatFile[]>([]);
   const [currentChat, setCurrentChat] = useState<string | null>(null);
   const [theme, setTheme] = useState<string>("dark");
-  const [chatModel, setChatModel] = useState<string>("llama-3.1-70b-versatile");
+  const [chatModel, setChatModel] = useState<string>("llama-3.3-70b-versatile");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -195,13 +195,15 @@ const App: React.FC = () => {
           value={chatModel}
           onChange={(e) => setChatModel(e.target.value)}
         >
-          <option value="llama-3.1-405b-reasoning">
-            llama-3.1-405b-reasoning
+          <option value="llama-3.3-70b-versatile">
+            llama-3.3-70b-versatile
           </option>
           <option value="llama-3.1-70b-versatile">
             llama-3.1-70b-versatile
           </option>
           <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
+          <option value="gemma2-9b-it">gemma2-9b-it</option>
+		  <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
         </select>
         {chatFiles.map((file) => (
           <div key={file.filename} className="chat-file">
