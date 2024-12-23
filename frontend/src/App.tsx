@@ -203,7 +203,7 @@ const App: React.FC = () => {
           </option>
           <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
           <option value="gemma2-9b-it">gemma2-9b-it</option>
-		  <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+          <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
         </select>
         {chatFiles.map((file) => (
           <div key={file.filename} className="chat-file">
